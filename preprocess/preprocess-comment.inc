@@ -12,6 +12,13 @@
  */
 
 $comment = $vars['comment'];
+/*
+//gemini
+echo $comment->comment;
+$comment->comment=htmlspecialchar_decode($comment->comment);
+echo $comment->comment;
+//
+*/
 // menu_get_object doesn't work here.
 $node = node_load($comment->nid);
 

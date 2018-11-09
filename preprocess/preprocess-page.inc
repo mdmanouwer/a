@@ -29,10 +29,10 @@ if ($vars['primary_links']) {
   $tree = str_replace(' class="menu"', '', $tree);
 
   // Find out how the navigation is aligned, and prepard the output
-  $navigation_alignment = theme_get_setting('sky_nav_alignment');
+  $navigation_alignment = theme_get_setting('buho_nav_alignment');
   $vars['primary_links'] = '<del class="wrap-'. $navigation_alignment .'">'. $tree .'</del>';
 }
-
+//echo print_r($vars['primary_links'],1);
 /**
  * Add some special classes for handling $site_name, $logo and $site_slogan
  */
@@ -84,6 +84,7 @@ $catch_all = implode('-', preg_replace('/[\s_]+/', '-', $arguments));
 /**
  * Handle special cases for CSS classes and id attributes.
  */
+
 switch (arg(0)) {
 
   case 'admin':
@@ -216,8 +217,19 @@ switch (TRUE) {
     $vars['body_attributes']['class'][] = 'both';
   break;
 }
-
+//intelsat-2015
+if(red_is_new_font()){    
+    $vars['body_attributes']['class'][]=' new-font-body';
+}else if(hontza_canal_rss_is_visualizador_activado()){
+    $vars['body_attributes']['class'][]=' visualizador-body';
+}else{
+    $vars['body_attributes']['class'][]=' class-body';
+}
 // Crunch down our attributes into a single string to be appended to the body
 // tag in the page template (credit Studio theme ;)).
 $vars['body_attributes'] = theme('render_attributes', $vars['body_attributes']);
 $vars['header_attributes'] = theme('render_attributes', $vars['header_attributes']);
+//intelsat-2015
+if(hontza_canal_rss_is_visualizador_activado()){
+    publico_add_page_info($vars);
+}				

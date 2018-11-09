@@ -4,35 +4,40 @@
 /**
  * @file
  * Theme function overrides
- * @see sky_theme(), template.php
+ * @see buho_theme(), template.php
  */
 
 /**
- * @see theme_breacrumb(), sky_theme()
+ * @see theme_breacrumb(), buho_theme()
  * http://api.drupal.org/api/function/theme_breadcrumb/6
  *
  * Added: Support for user to select a custom separator in theme settings
  * Added: id attribute: breadcrumbs, class attribute: clearfix
  * Removed: Class attribute: breadcrumb
  */
-function sky_breadcrumb($breadcrumb) {
-  if (!empty($breadcrumb) && (theme_get_setting('sky_breadcrumbs') == 0)) {
+function buho_breadcrumb($breadcrumb) {
+  if (!empty($breadcrumb) && (theme_get_setting('buho_breadcrumbs') == 0)) {
     // Use separator defined by theme settings
-    $sky_separator = theme_get_setting('sky_breadcrumbs_sep');
+    $buho_separator = theme_get_setting('buho_breadcrumbs_sep');
 
-    $separator =  $sky_separator ? $sky_separator : '&raquo;';
+    $separator =  $buho_separator ? $buho_separator : '&raquo;';
     return '<div id="breadcrumbs" class="clearfix">'. implode(' '. $separator .' ', $breadcrumb) .'</div>';
   }
 }
 
 /**
- * @see theme_feed_icon(), sky_theme()
+ * @see theme_feed_icon(), buho_theme()
  * http://api.drupal.org/api/function/theme_feed_icon/6
  *
  * Added: A different default title when one is not provided.
  * Changed: The location of the feed icon image to one provided by the theme.
  */
-function sky_feed_icon($url, $title) {
+function buho_feed_icon($url, $title) {
+  //gemini
+  if(is_hide_feed()){
+    return '';
+  }
+  //
   if (!$title) {
     $title = t('Subscribe to this feed');
   }
@@ -45,14 +50,14 @@ function sky_feed_icon($url, $title) {
 }
 
 /**
- * @see theme_fieldset(), sky_theme()
+ * @see theme_fieldset(), buho_theme()
  * http://api.drupal.org/api/function/theme_fieldset/6
  *
  * Added: <div class="fieldset-wrapper"> Only collapsible fieldsets have it.
  * Applying padding and background colors to it as opposed to the fieldset
  * itself allows for better styling.
  */
-function sky_fieldset($element) {
+function buho_fieldset($element) {
   if (!empty($element['#collapsible'])) {
     drupal_add_js('misc/collapse.js');
 
@@ -70,16 +75,27 @@ function sky_fieldset($element) {
 }
 
  /**
- * @see theme_menu_local_tasks(), sky_theme()
+ * @see theme_menu_local_tasks(), buho_theme()
  * http://api.drupal.org/api/function/theme_menu_local_tasks/6
  *
  * Added: A wrapper <div>'s with class attributes: clearfix class, a helper class
  * indicating what's inside, and id attributes.
  */
-function sky_menu_local_tasks() {
+function buho_menu_local_tasks() {
+  //intelsat-2015
+  if(red_crear_usuario_is_custom_css()){
+        return '';
+  }
+  //gemini-2014
+  if(hontza_is_tag_node_pantalla()){
+      return '';
+  }  
   $primary = menu_primary_local_tasks();
   $secondary = menu_secondary_local_tasks();
-
+  //intelsat-2016
+  $primary=hontza_registrar_get_primary_local_tasks($primary);
+  $secondary=hontza_registrar_get_secondary_local_tasks($secondary);
+  
   // What's inside
   if ($primary && $secondary) {
     $helper_class = ' primary-and-secondary';
@@ -89,14 +105,43 @@ function sky_menu_local_tasks() {
   }
 
   if ($primary || $secondary) {
+      
     $output = '<div class="tab-wrapper clearfix'. $helper_class .'">';
-
+          
     if ($primary) {
+          /*
+          //gemini-2014  
+          if(red_funciones_is_show_menu_ideas_by_page_tpl()){
+              $output=create_menu_ideas().$output;
+          }
+          //
+           */
+	  //gemini
+	  $primary=my_add_menu_node_link($primary);
+	  //gemini-2013
+          //$primary=red_set_update_canal_menu_node_url($primary);
+          //gemini-2014
+          $primary=hontza_taxonomy_my_set_menu_primary_links($primary);
+          $primary=user_my_set_primary_links($primary);
+          
+          //
       $output .= "\n".'<div id="tabs-primary" class="tabs primary">'."\n".
       '  <ul>'."\n". $primary .'</ul>'."\n".
       '</div>';
     }
     if ($secondary) {
+      //gemini
+      $secondary=set_mi_perfil_secondary_titles($secondary);
+      //
+      //intelsat-2015
+      $secondary=red_crear_usuario_set_secondary_links($secondary);
+      if(red_crear_usuario_is_activado()){
+        if(empty($secondary)){
+            if(crear_usuario_is_editando_usuario_propio('')){
+                return '';
+            }    
+        }
+      }  
       $output .= "\n".'<div id="tabs-secondary" class="tabs secondary">'."\n" .
       '  <ul>'."\n". $secondary .'</ul>'."\n" .
       '</div>';
@@ -108,18 +153,26 @@ function sky_menu_local_tasks() {
 }
 
 /**
- * @see theme_pager(), sky_theme()
+ * @see theme_pager(), buho_theme()
  * http://api.drupal.org/api/function/theme_pager/6
  *
  * Added: 2 wrapper <div>'s
  * Changed: Wrapped $pager_current, and &hellip;'s in a <span> tag.
  * Removed: .pager-item, .pager-next, .pager-previous classes
  */
-function sky_pager($tags = array(), $limit = 10, $element = 0, $parameters = array(), $quantity = 9) {
+//intelsat-2015
+//function buho_pager($tags = array(), $limit = 10, $element = 0, $parameters = array(), $quantity = 9) {
+function buho_pager($tags = array(), $limit = 10, $element = 0, $parameters = array(), $quantity_in = 9, $field_pager=''){
   global $pager_page_array, $pager_total;
-
+/*echo print_r($pager_total_items,1);
+echo print_r($pager_total,1);
+echo print_r($pager_page_array,1);*/
   // Calculate various markers within this pager piece:
   // Middle is used to "center" pages around the current page.
+  $quantity=$quantity_in;
+  //if(hontza_solr_is_resultados_pantalla()){
+      $quantity=5;
+  //}
   $pager_middle = ceil($quantity / 2);
   // current is the page we are currently paged to
   $pager_current = $pager_page_array[$element] + 1;
@@ -144,12 +197,22 @@ function sky_pager($tags = array(), $limit = 10, $element = 0, $parameters = arr
     $i = 1;
   }
   // End of generation loop preparation.
-
-  $li_first = theme('pager_first', (isset($tags[0]) ? $tags[0] : t('« First')), $limit, $element, $parameters);
-  $li_previous = theme('pager_previous', (isset($tags[1]) ? $tags[1] : t('‹ Previous')), $limit, $element, 1, $parameters);
-  $li_next = theme('pager_next', (isset($tags[3]) ? $tags[3] : t('Next ›')), $limit, $element, 1, $parameters);
-  $li_last = theme('pager_last', (isset($tags[4]) ? $tags[4] : t('Last »')), $limit, $element, $parameters);
-
+  //intelsat-2016
+  /*$first_label=t('« First');
+  $previous_label=t('‹ Previous');
+  $next_label=t('Next ›');
+  $last_label=t('Last »');
+  if(hontza_solr_is_resultados_pantalla()){*/
+    $first_label=t('<<');
+    $previous_label=t('<');
+    $next_label=t('>');
+    $last_label=t('>>');
+  //}
+  $li_first = theme('pager_first', (isset($tags[0]) ? $tags[0] : $first_label), $limit, $element, $parameters);
+  $li_previous = theme('pager_previous', (isset($tags[1]) ? $tags[1] : $previous_label), $limit, $element, 1, $parameters);
+  $li_next = theme('pager_next', (isset($tags[3]) ? $tags[3] : $next_label), $limit, $element, 1, $parameters);
+  $li_last = theme('pager_last', (isset($tags[4]) ? $tags[4] : $last_label), $limit, $element, $parameters);
+ 
   if ($pager_total[$element] > 1) {
     if ($li_first) {
       $items[] = array(
@@ -209,7 +272,10 @@ function sky_pager($tags = array(), $limit = 10, $element = 0, $parameters = arr
         'data' => $li_last,
       );
     }
-
+    //intelsat-2015
+    if(!empty($field_pager)){
+        $items=buho_set_field_pager($items,$field_pager);
+    }
     // Prepare the pager output
     $output = '<div class="pager clearfix">'."\n";
     $output .= '  <div class="pager-inner">'."\n";
@@ -222,13 +288,13 @@ function sky_pager($tags = array(), $limit = 10, $element = 0, $parameters = arr
 }
 
 /**
- * @see theme_table(), sky_theme()
+ * @see theme_table(), buho_theme()
  * http://api.drupal.org/api/function/theme_table/6
  *
  * Added: A wrapper <div> with to class attributes: table-wrapper, clearfix to
  * deal with overflow and word-wrap and word-break issues.
  */
-function sky_table($header, $rows, $attributes = array(), $caption = NULL) {
+function buho_table($header, $rows, $attributes = array(), $caption = NULL) {
 
   // Add sticky headers, if applicable.
   if (count($header)) {
@@ -313,13 +379,13 @@ function sky_table($header, $rows, $attributes = array(), $caption = NULL) {
 }
 
 /**
- * @see theme_status_messages(), sky_theme()
+ * @see theme_status_messages(), buho_theme()
  * http://api.drupal.org/api/function/theme_status_messages/6
  *
  * Added: A wrapper <div> with to class attributes: table-wrapper, clearfix to
  * deal with overflow and word-wrap and word-break issues.
  */
-function sky_status_messages($display = NULL) {
+function buho_status_messages($display = NULL) {
   $output = '';
   foreach (drupal_get_messages($display) as $type => $messages) {
     $output .= "<div class=\"messages $type\">\n";
@@ -342,7 +408,7 @@ function sky_status_messages($display = NULL) {
   return $output;
 }
 
-function sky_status_report($requirements) {
+function buho_status_report($requirements) {
   $i = 0;
   $output = '<table class="system-status-report">';
   foreach ($requirements as $requirement) {
@@ -378,7 +444,7 @@ function sky_status_report($requirements) {
  * Added: A css class indicating the type of element it contains, i.e. .form-item-textfield
  * Added: A css class indicating of the element is required, i.e. .form-item-required
  */
-function sky_form_element($element, $value) {
+function buho_form_element($element, $value) {
   // This is also used in the installer, pre-database setup.
   $t = get_t();
 
@@ -398,8 +464,10 @@ function sky_form_element($element, $value) {
     $output .= ' id="'. $element['#id'] .'-wrapper"';
   }
   $output .= ">\n";
-  $required = !empty($element['#required']) ? '<span class="form-required" title="'. $t('This field is required.') .'">*</span>' : '';
-
+  //intelsat-2015
+  //$required = !empty($element['#required']) ? '<span class="form-required" title="'. $t('This field is required.') .'">*</span>' : '';
+  $required=buho_get_form_element_required($element);
+  //
   if (!empty($element['#title'])) {
     $title = $element['#title'];
     if (!empty($element['#id'])) {
@@ -426,6 +494,43 @@ function sky_form_element($element, $value) {
  * http://api.drupal.org/api/function/theme_more_link/6
  * Added: <span> tag for icon
  */
-function sky_more_link($url, $title) {
+function buho_more_link($url, $title) {
   return '<div class="more-link"> <span class="icon">&nbsp;</span> '. t('<a href="@link" title="@title">more</a>', array('@link' => check_url($url), '@title' => $title)) .'</div>';
+}
+//gemini
+function is_hide_feed(){
+    if(is_ficha_node('grupo')){
+        return 1;
+    }
+    if(red_funciones_is_taxonomy_term()){
+        return 1;
+    }
+    return 0;
+}
+//intelsat-2015
+function buho_get_form_element_required($element){ 
+    //print $element['#name'].'<br>';
+    $field_array=array('claves_vigencia_minima','claves_vigencia_maxima','claves_num_exclusivas','claves_pass_len_minima','claves_maximo_caracteres_username');
+    if(in_array($element['#name'],$field_array)){
+        return '';
+    }else{
+        if(!empty($element['#required'])){
+            $result='<span class="form-required" title="'.t('This field is required.') .'">*</span>';
+        }else{
+            return '';
+        }        
+    }
+    return $result;
+}
+//intelsat-2015
+function buho_set_field_pager($items,$field_pager){
+    $result=$items;
+    if(!empty($result)){
+        foreach($result as $i=>$r){
+            if(isset($r['data']) && !empty($r['data'])){
+                $result[$i]['data']=str_replace('page=',$field_pager.'=',$r['data']);
+            }
+        }
+    }
+    return $result;
 }
