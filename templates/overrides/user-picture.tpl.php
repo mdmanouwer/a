@@ -15,8 +15,13 @@
  * @see template_preprocess_user_picture()
  */
 ?>
-<?php if ($picture): ?>
-<div class="picture">
-  <?php print $picture; ?>
+<?php //gemini ?>
+<?php //if ($picture): ?>
+<div class="picture"> 
+<?php  if($account->picture):?> 
+  <?php //print $picture; ?>
+  <?php print my_get_user_img_src('',$account->picture,$account->name,$account->uid);?>
+<?php else:?>
+	<?php print my_get_user_img_src('','',$account->name,$account->uid);?>
+<?php endif;?>
 </div>
-<?php endif;

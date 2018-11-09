@@ -43,19 +43,18 @@ table {
 }
 /* @end */
 /* @group Layout */
-#wrapper {
+/*intelsat-2015*/
+#wrapper,#visualizador_wrapper,#new_font_wrapper {
   height: auto !important;
   min-height: 100%;
   width: 960px;
-  margin: 0 auto -4em;
+  margin: 0 auto -1em;
 }
 /* @group Footer */
 #footer {
   clear: both;
-  width: 960px;
-  margin: 0 auto;
   min-height: 2em;
-  padding-bottom: 2em;
+  
 }
 /* @end */
 #sidebar-left,
@@ -64,13 +63,18 @@ table {
 }
 .push {
   clear: both;
-  height: 4em;
+  height: 1em;
 }
 .main-inner {
-  padding: 1em 2em;
+  /*intelsat-2015*/  
+  /*padding: 1em 2em;*/
+  /*padding: 0em 2em 1em;*/
+  padding: 0.5em 2em 1em;
 }
 .sidebar .inner {
-  padding: 1em 1.25em;
+  /*intelsat-2015*/  
+  /*padding: 1em 1.25em;*/
+  padding: 0.5em 1.25em;
 }
 /* @group Both Sidebars */
 .both #sidebar-left {
@@ -93,8 +97,12 @@ table {
   float: left;
 }
 .left #main {
-  width: 75%;
+  width: 74%;
   float: left;
+  border-left:1px solid #CCCCCC;
+  background-color:#FFFFFF;
+  min-height: 800px;
+  padding-left:0.6em;
 }
 /* @end */
 
@@ -121,7 +129,9 @@ table {
 }
 #content-top,
 #content-bottom {
-  margin: 25px 0;
+  /*intelsat-2015*/  
+  /*margin: 25px 0;*/
+  margin:0;
 }
 #main {
   overflow: hidden;
@@ -157,3 +167,8 @@ table {
 }
 /* close commented backslash hack */
 /* @end */
+/*intelsat-2015*/
+#content-top div#block-tagadelic-3{
+    /*margin: 0.5em 0 2em;*/
+    margin: 0 0 2em;
+}

@@ -30,6 +30,10 @@
   <?php endif; ?>
   <?php if ($header): ?>
     <div class="view-header">
+      <?php //gemini-2014?>
+      <?php //if(hontza_is_validar_page_header($name)):?> 
+            <?php //print validar_page_header();?>
+      <?php //endif;?>  
       <?php print $header; ?>
     </div>
   <?php endif; ?>
@@ -67,7 +71,7 @@
     <div class="view-footer">
       <?php print $footer; ?>
     </div>
-  <?php endif; ?>
+  <?php endif; ?>    
   <?php if ($feed_icon): ?>
     <div class="feed-icon">
       <?php print $feed_icon; ?>

@@ -14,9 +14,13 @@
       <?php if ($submitted): ?>
       <?php print $picture; ?>
       <?php endif; ?>
-      <?php if (!$page && $title): ?>
-        <h2><a href="<?php print $node_url; ?>" title="<?php print $title; ?>"><?php print $title; ?></a></h2>
-      <?php endif; ?>
+	  <?php if (!$page && $title): ?>
+        <!--gemini-->
+		<!--
+		<h2><a href="<?php //print $node_url; ?>" title="<?php //print $title; ?>"><?php //print $title; ?></a></h2>
+        -->
+		<h2><?php print l($title,'node/'.$node->nid,array('attributes'=>array('title'=>$title))); ?></h2>         
+	  <?php endif; ?>
       <?php if ($submitted): ?>
         <p><?php print $submitted; ?></p>
       <?php endif; ?>
